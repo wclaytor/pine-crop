@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pine Crop</title>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        [x-cloak] { display: none !important; }
+        
+        .crop-container {
+            position: relative;
+            display: inline-block;
+            user-select: none;
+        }
+        
+        .crop-overlay {
+            position: absolute;
+            border: 2px solid #3B82F6;
+            background-color: rgba(59, 130, 246, 0.1);
+            cursor: move;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+        }
+        
+        .resize-handle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #3B82F6;
+            border: 2px solid white;
+        }
+        
+        .resize-handle-nw { top: -5px; left: -5px; cursor: nw-resize; }
+        .resize-handle-ne { top: -5px; right: -5px; cursor: ne-resize; }
+        .resize-handle-sw { bottom: -5px; left: -5px; cursor: sw-resize; }
+        .resize-handle-se { bottom: -5px; right: -5px; cursor: se-resize; }
+        .resize-handle-n { top: -5px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
+        .resize-handle-s { bottom: -5px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
+        .resize-handle-w { top: 50%; left: -5px; transform: translateY(-50%); cursor: w-resize; }
+        .resize-handle-e { top: 50%; right: -5px; transform: translateY(-50%); cursor: e-resize; }
+    </style>
+</head>
+<body>
+    <div x-data="imageCropper()" x-cloak class="min-h-screen bg-gray-50 p-6">
+        <div class="max-w-7xl mx-auto">
+            <!-- Header -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">
+                    <i class="bi bi-crop text-blue-500"></i>
+                    Pine Crop
+                </h1>
+                <p class="text-gray-600">Upload PNG images, set crop boundaries on the first image, and apply to all.</p>
+            </div>
+            
+            <!-- File Upload -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Select PNG Images
+                </label>
+                <input 
+                    type="file" 
+                    @change="handleFileUpload($event)"
+                    accept=".png,image/png"
+                    multiple
+                    class="block w-full text-sm text-gray-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-full file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-blue-50 file:text-blue-700
+                        hover:file:bg-blue-100">
+                
+                <div x-show="files.length > 0" class="mt-4 p-4 bg-gray-50 rounded">
+                    <p class="text-sm text-gray-600">
+                        <i class="bi bi-images"></i>
+                        <span x-text="files.length"></span> image(s) loaded
+                    </p>
+                    <div class="mt-2 flex flex-wrap gap-2">
+                        <template x-for="file in files" :key="file.name">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                <span x-text="file.name"></span>
+                            </span>
+                        </template>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Crop Area -->
+            <div x-show="previewImage" class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Set Crop Area</h2>
+                
+                <!-- Crop Controls -->
+                <div class="mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">X Position</label>
+                        <input 
+                            type="number" 
+                            x-model.number="cropX" 
+                            @input="updateCropOverlay()"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Y Position</label>
+                        <input 
+                            type="number" 
+                            x-model.number="cropY"
+                            @input="updateCropOverlay()"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Width</label>
+                        <input 
+                            type="number" 
+                            x-model.number="cropWidth"
+                            @input="updateCropOverlay()"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Height</label>
+                        <input 
+                            type="number" 
+                            x-model.number="cropHeight"
+                            @input="updateCropOverlay()"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                </div>
+                
+                <!-- Preview Image with Crop Overlay -->
+                <div class="overflow-auto max-h-[600px] border border-gray-200 rounded bg-gray-100 p-4">
+                    <div class="crop-container inline-block" @mousedown="startDrag($event)">
+                        <img 
+                            :src="previewImage" 
+                            id="preview-img"
+                            class="max-w-full block">
+                        <div 
+                            id="crop-overlay"
+                            class="crop-overlay"
+                            :style="`left: ${displayCropX}px; top: ${displayCropY}px; width: ${displayCropWidth}px; height: ${displayCropHeight}px;`">
+                            <!-- Resize handles -->
+                            <div class="resize-handle resize-handle-nw" @mousedown.stop="startResize($event, 'nw')"></div>
+                            <div class="resize-handle resize-handle-ne" @mousedown.stop="startResize($event, 'ne')"></div>
+                            <div class="resize-handle resize-handle-sw" @mousedown.stop="startResize($event, 'sw')"></div>
+                            <div class="resize-handle resize-handle-se" @mousedown.stop="startResize($event, 'se')"></div>
+                            <div class="resize-handle resize-handle-n" @mousedown.stop="startResize($event, 'n')"></div>
+                            <div class="resize-handle resize-handle-s" @mousedown.stop="startResize($event, 's')"></div>
+                            <div class="resize-handle resize-handle-w" @mousedown.stop="startResize($event, 'w')"></div>
+                            <div class="resize-handle resize-handle-e" @mousedown.stop="startResize($event, 'e')"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 text-sm text-gray-600">
+                    <i class="bi bi-info-circle"></i>
+                    Drag the blue box to position it, or drag the handles to resize. The crop area will be applied to all images.
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div x-show="files.length > 0" class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex gap-4">
+                    <button 
+                        @click="cropAllImages()"
+                        :disabled="processing"
+                        class="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                        <span x-show="!processing">
+                            <i class="bi bi-crop"></i>
+                            Crop All Images
+                        </span>
+                        <span x-show="processing">
+                            <i class="bi bi-hourglass-split"></i>
+                            Processing...
+                        </span>
+                    </button>
+                    
+                    <button 
+                        @click="reset()"
+                        class="px-6 py-3 bg-gray-500 text-white font-semibold rounded-lg hover:bg-gray-600">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Reset
+                    </button>
+                </div>
+                
+                <div x-show="progress.total > 0" class="mt-4">
+                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                        <span>Processing: <span x-text="progress.current"></span> / <span x-text="progress.total"></span></span>
+                        <span><span x-text="Math.round((progress.current / progress.total) * 100)"></span>%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                            class="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                            :style="`width: ${(progress.current / progress.total) * 100}%`">
+                        </div>
+                    </div>
+                </div>
+                
+                <div x-show="completedFiles.length > 0" class="mt-4 p-4 bg-green-50 rounded">
+                    <p class="text-green-700 font-semibold mb-2">
+                        <i class="bi bi-check-circle"></i>
+                        Cropping Complete!
+                    </p>
+                    <p class="text-sm text-green-600">
+                        Successfully cropped <span x-text="completedFiles.length"></span> image(s).
+                        Files have been downloaded with "-crop" suffix.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function imageCropper() {
+            return {
+                files: [],
+                previewImage: null,
+                originalWidth: 0,
+                originalHeight: 0,
+                displayScale: 1,
+                cropX: 100,
+                cropY: 100,
+                cropWidth: 800,
+                cropHeight: 600,
+                displayCropX: 100,
+                displayCropY: 100,
+                displayCropWidth: 800,
+                displayCropHeight: 600,
+                processing: false,
+                progress: { current: 0, total: 0 },
+                completedFiles: [],
+                isDragging: false,
+                isResizing: false,
+                resizeHandle: null,
+                dragStart: { x: 0, y: 0 },
+                cropStart: { x: 0, y: 0, width: 0, height: 0 },
+                
+                async handleFileUpload(event) {
+                    this.files = Array.from(event.target.files);
+                    this.completedFiles = [];
+                    this.progress = { current: 0, total: 0 };
+                    
+                    if (this.files.length > 0) {
+                        await this.loadPreviewImage(this.files[0]);
+                    }
+                },
+                
+                async loadPreviewImage(file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.previewImage = e.target.result;
+                        
+                        // Wait for image to load to get dimensions
+                        this.$nextTick(() => {
+                            const img = document.getElementById('preview-img');
+                            if (img) {
+                                img.onload = () => {
+                                    this.originalWidth = img.naturalWidth;
+                                    this.originalHeight = img.naturalHeight;
+                                    this.displayScale = img.width / img.naturalWidth;
+                                    
+                                    // Set default crop area (center 80% of image)
+                                    this.cropWidth = Math.round(this.originalWidth * 0.8);
+                                    this.cropHeight = Math.round(this.originalHeight * 0.8);
+                                    this.cropX = Math.round((this.originalWidth - this.cropWidth) / 2);
+                                    this.cropY = Math.round((this.originalHeight - this.cropHeight) / 2);
+                                    
+                                    this.updateCropOverlay();
+                                };
+                            }
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                },
+                
+                updateCropOverlay() {
+                    const img = document.getElementById('preview-img');
+                    if (img) {
+                        this.displayScale = img.width / this.originalWidth;
+                        this.displayCropX = this.cropX * this.displayScale;
+                        this.displayCropY = this.cropY * this.displayScale;
+                        this.displayCropWidth = this.cropWidth * this.displayScale;
+                        this.displayCropHeight = this.cropHeight * this.displayScale;
+                    }
+                },
+                
+                startDrag(event) {
+                    const overlay = document.getElementById('crop-overlay');
+                    if (event.target === overlay) {
+                        this.isDragging = true;
+                        this.dragStart = {
+                            x: event.clientX,
+                            y: event.clientY
+                        };
+                        this.cropStart = {
+                            x: this.cropX,
+                            y: this.cropY
+                        };
+                        
+                        document.addEventListener('mousemove', this.handleDrag.bind(this));
+                        document.addEventListener('mouseup', this.stopDrag.bind(this));
+                        event.preventDefault();
+                    }
+                },
+                
+                handleDrag(event) {
+                    if (this.isDragging) {
+                        const dx = (event.clientX - this.dragStart.x) / this.displayScale;
+                        const dy = (event.clientY - this.dragStart.y) / this.displayScale;
+                        
+                        this.cropX = Math.max(0, Math.min(this.originalWidth - this.cropWidth, this.cropStart.x + dx));
+                        this.cropY = Math.max(0, Math.min(this.originalHeight - this.cropHeight, this.cropStart.y + dy));
+                        
+                        this.updateCropOverlay();
+                    }
+                },
+                
+                stopDrag() {
+                    this.isDragging = false;
+                    document.removeEventListener('mousemove', this.handleDrag);
+                    document.removeEventListener('mouseup', this.stopDrag);
+                },
+                
+                startResize(event, handle) {
+                    this.isResizing = true;
+                    this.resizeHandle = handle;
+                    this.dragStart = {
+                        x: event.clientX,
+                        y: event.clientY
+                    };
+                    this.cropStart = {
+                        x: this.cropX,
+                        y: this.cropY,
+                        width: this.cropWidth,
+                        height: this.cropHeight
+                    };
+                    
+                    document.addEventListener('mousemove', this.handleResize.bind(this));
+                    document.addEventListener('mouseup', this.stopResize.bind(this));
+                    event.preventDefault();
+                },
+                
+                handleResize(event) {
+                    if (this.isResizing) {
+                        const dx = (event.clientX - this.dragStart.x) / this.displayScale;
+                        const dy = (event.clientY - this.dragStart.y) / this.displayScale;
+                        
+                        switch(this.resizeHandle) {
+                            case 'nw':
+                                this.cropX = Math.min(this.cropStart.x + this.cropStart.width - 50, this.cropStart.x + dx);
+                                this.cropY = Math.min(this.cropStart.y + this.cropStart.height - 50, this.cropStart.y + dy);
+                                this.cropWidth = this.cropStart.width - (this.cropX - this.cropStart.x);
+                                this.cropHeight = this.cropStart.height - (this.cropY - this.cropStart.y);
+                                break;
+                            case 'ne':
+                                this.cropY = Math.min(this.cropStart.y + this.cropStart.height - 50, this.cropStart.y + dy);
+                                this.cropWidth = Math.max(50, this.cropStart.width + dx);
+                                this.cropHeight = this.cropStart.height - (this.cropY - this.cropStart.y);
+                                break;
+                            case 'sw':
+                                this.cropX = Math.min(this.cropStart.x + this.cropStart.width - 50, this.cropStart.x + dx);
+                                this.cropWidth = this.cropStart.width - (this.cropX - this.cropStart.x);
+                                this.cropHeight = Math.max(50, this.cropStart.height + dy);
+                                break;
+                            case 'se':
+                                this.cropWidth = Math.max(50, this.cropStart.width + dx);
+                                this.cropHeight = Math.max(50, this.cropStart.height + dy);
+                                break;
+                            case 'n':
+                                this.cropY = Math.min(this.cropStart.y + this.cropStart.height - 50, this.cropStart.y + dy);
+                                this.cropHeight = this.cropStart.height - (this.cropY - this.cropStart.y);
+                                break;
+                            case 's':
+                                this.cropHeight = Math.max(50, this.cropStart.height + dy);
+                                break;
+                            case 'w':
+                                this.cropX = Math.min(this.cropStart.x + this.cropStart.width - 50, this.cropStart.x + dx);
+                                this.cropWidth = this.cropStart.width - (this.cropX - this.cropStart.x);
+                                break;
+                            case 'e':
+                                this.cropWidth = Math.max(50, this.cropStart.width + dx);
+                                break;
+                        }
+                        
+                        // Keep within bounds
+                        this.cropX = Math.max(0, this.cropX);
+                        this.cropY = Math.max(0, this.cropY);
+                        this.cropWidth = Math.min(this.originalWidth - this.cropX, this.cropWidth);
+                        this.cropHeight = Math.min(this.originalHeight - this.cropY, this.cropHeight);
+                        
+                        this.updateCropOverlay();
+                    }
+                },
+                
+                stopResize() {
+                    this.isResizing = false;
+                    this.resizeHandle = null;
+                    document.removeEventListener('mousemove', this.handleResize);
+                    document.removeEventListener('mouseup', this.stopResize);
+                },
+                
+                async cropAllImages() {
+                    if (this.files.length === 0) return;
+                    
+                    this.processing = true;
+                    this.completedFiles = [];
+                    this.progress = { current: 0, total: this.files.length };
+                    
+                    for (let i = 0; i < this.files.length; i++) {
+                        await this.cropSingleImage(this.files[i]);
+                        this.progress.current = i + 1;
+                    }
+                    
+                    this.processing = false;
+                },
+                
+                async cropSingleImage(file) {
+                    return new Promise((resolve) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            // Create canvas for cropping
+                            const canvas = document.createElement('canvas');
+                            canvas.width = this.cropWidth;
+                            canvas.height = this.cropHeight;
+                            const ctx = canvas.getContext('2d');
+                            
+                            // Draw cropped portion
+                            ctx.drawImage(
+                                img,
+                                this.cropX, this.cropY, this.cropWidth, this.cropHeight,
+                                0, 0, this.cropWidth, this.cropHeight
+                            );
+                            
+                            // Convert to blob and download
+                            canvas.toBlob((blob) => {
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                
+                                // Generate filename with -crop suffix
+                                const originalName = file.name.replace(/\.png$/i, '');
+                                const newName = `${originalName}-crop.png`;
+                                
+                                a.href = url;
+                                a.download = newName;
+                                a.click();
+                                
+                                URL.revokeObjectURL(url);
+                                this.completedFiles.push(newName);
+                                resolve();
+                            }, 'image/png');
+                        };
+                        
+                        // Read file and load into image
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            img.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                },
+                
+                reset() {
+                    this.files = [];
+                    this.previewImage = null;
+                    this.completedFiles = [];
+                    this.progress = { current: 0, total: 0 };
+                    this.cropX = 100;
+                    this.cropY = 100;
+                    this.cropWidth = 800;
+                    this.cropHeight = 600;
+                    document.querySelector('input[type="file"]').value = '';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
