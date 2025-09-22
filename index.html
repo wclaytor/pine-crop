@@ -8,14 +8,34 @@
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     
     <style>
         [x-cloak] { display: none !important; }
+        
+        /* Dark mode support */
+        :root {
+            --bg-primary: #f9fafb;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f3f4f6;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-tertiary: #6b7280;
+            --border-color: #d1d5db;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+        
+        .dark {
+            --bg-primary: #1f2937;
+            --bg-secondary: #374151;
+            --bg-tertiary: #4b5563;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --text-tertiary: #9ca3af;
+            --border-color: #4b5563;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+        }
         
         .crop-container {
             position: relative;
@@ -47,23 +67,200 @@
         .resize-handle-s { bottom: -5px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
         .resize-handle-w { top: 50%; left: -5px; transform: translateY(-50%); cursor: w-resize; }
         .resize-handle-e { top: 50%; right: -5px; transform: translateY(-50%); cursor: e-resize; }
+        
+        /* Custom utility classes for dark mode */
+        .bg-body { background-color: var(--bg-primary); transition: background-color 0.2s; }
+        .bg-card { background-color: var(--bg-secondary); transition: background-color 0.2s; }
+        .bg-subtle { background-color: var(--bg-tertiary); transition: background-color 0.2s; }
+        .text-primary { color: var(--text-primary); transition: color 0.2s; }
+        .text-secondary { color: var(--text-secondary); transition: color 0.2s; }
+        .text-tertiary { color: var(--text-tertiary); transition: color 0.2s; }
+        .border-custom { border-color: var(--border-color); transition: border-color 0.2s; }
+        .shadow-custom { box-shadow: var(--shadow); transition: box-shadow 0.2s; }
+        
+        /* Basic layout utilities */
+        .min-h-screen { min-height: 100vh; }
+        .max-w-7xl { max-width: 80rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .p-6 { padding: 1.5rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-1 { margin-top: 0.25rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded { border-radius: 0.25rem; }
+        .rounded-full { border-radius: 9999px; }
+        .block { display: block; }
+        .inline-block { display: inline-block; }
+        .inline-flex { display: inline-flex; }
+        .flex { display: flex; }
+        .grid { display: grid; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-4 { gap: 1rem; }
+        .gap-2 { gap: 0.5rem; }
+        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        .w-full { width: 100%; }
+        .max-w-full { max-width: 100%; }
+        .overflow-auto { overflow: auto; }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .font-medium { font-weight: 500; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .p-4 { padding: 1rem; }
+        .p-3 { padding: 0.75rem; }
+        .border { border-width: 1px; }
+        .cursor-pointer { cursor: pointer; }
+        .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+        .transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+        .duration-200 { transition-duration: 200ms; }
+        .duration-300 { transition-duration: 300ms; }
+        .h-2 { height: 0.5rem; }
+        
+        /* Responsive grid */
+        @media (min-width: 768px) {
+            .md\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (min-width: 1024px) {
+            .lg\\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover { background-color: #2563eb; }
+        .btn-primary:disabled { background-color: #9ca3af; cursor: not-allowed; }
+        
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-secondary:hover { background-color: #4b5563; }
+        
+        /* Input styling */
+        .input-field {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+        
+        /* File input styling */
+        .file-input {
+            width: 100%;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            background-color: var(--bg-secondary);
+            transition: color 0.2s, background-color 0.2s;
+        }
+        .file-input::file-selector-button {
+            margin-right: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            border: 0;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #1d4ed8;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .file-input::file-selector-button:hover {
+            background-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #1e40af;
+        }
+        
+        /* Progress bar */
+        .progress-bg {
+            width: 100%;
+            background-color: var(--bg-tertiary);
+            border-radius: 9999px;
+            height: 0.5rem;
+            transition: background-color 0.2s;
+        }
+        .progress-fill {
+            background-color: #3b82f6;
+            height: 0.5rem;
+            border-radius: 9999px;
+            transition: width 0.3s;
+        }
+        
+        /* Max height constraint */
+        .max-h-600 { max-height: 600px; }
     </style>
 </head>
-<body>
-    <div x-data="imageCropper()" x-cloak class="min-h-screen bg-gray-50 p-6">
+<body :class="darkMode ? 'dark' : ''" class="bg-body">
+    <div x-data="imageCropper()" x-init="init()" x-cloak class="min-h-screen bg-body p-6">
         <div class="max-w-7xl mx-auto">
             <!-- Header -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h1 class="text-3xl font-bold text-gray-800 mb-4">
-                    <i class="bi bi-crop text-blue-500"></i>
-                    Pine Crop
-                </h1>
-                <p class="text-gray-600">Upload PNG images, set crop boundaries on the first image, and apply to all.</p>
+            <div class="bg-card shadow-custom rounded-lg p-6 mb-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-primary mb-4">
+                            <i class="bi bi-crop text-blue-500"></i>
+                            Pine Crop
+                        </h1>
+                        <p class="text-secondary">Upload PNG images, set crop boundaries on the first image, and apply to all.</p>
+                    </div>
+                    <button 
+                        @click="toggleDarkMode()"
+                        class="p-3 rounded-lg bg-subtle hover:opacity-80 text-secondary transition-all duration-200"
+                        title="Toggle dark mode"
+                        style="border: 1px solid var(--border-color);">
+                        <i x-show="!darkMode" class="bi bi-moon text-xl"></i>
+                        <i x-show="darkMode" class="bi bi-sun text-xl"></i>
+                    </button>
+                </div>
             </div>
             
             <!-- File Upload -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+            <div class="bg-card shadow-custom rounded-lg p-6 mb-6">
+                <label class="block text-sm font-medium text-primary mb-2">
                     Select PNG Images
                 </label>
                 <input 
@@ -71,21 +268,16 @@
                     @change="handleFileUpload($event)"
                     accept=".png,image/png"
                     multiple
-                    class="block w-full text-sm text-gray-500
-                        file:mr-4 file:py-2 file:px-4
-                        file:rounded-full file:border-0
-                        file:text-sm file:font-semibold
-                        file:bg-blue-50 file:text-blue-700
-                        hover:file:bg-blue-100">
+                    class="file-input">
                 
-                <div x-show="files.length > 0" class="mt-4 p-4 bg-gray-50 rounded">
-                    <p class="text-sm text-gray-600">
+                <div x-show="files.length > 0" class="mt-4 p-4 bg-subtle rounded">
+                    <p class="text-sm text-secondary">
                         <i class="bi bi-images"></i>
                         <span x-text="files.length"></span> image(s) loaded
                     </p>
                     <div class="mt-2 flex flex-wrap gap-2">
                         <template x-for="file in files" :key="file.name">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            <span class="badge">
                                 <span x-text="file.name"></span>
                             </span>
                         </template>
@@ -94,47 +286,47 @@
             </div>
             
             <!-- Crop Area -->
-            <div x-show="previewImage" class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Set Crop Area</h2>
+            <div x-show="previewImage" class="bg-card shadow-custom rounded-lg p-6 mb-6">
+                <h2 class="text-lg font-semibold text-primary mb-4">Set Crop Area</h2>
                 
                 <!-- Crop Controls -->
                 <div class="mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">X Position</label>
+                        <label class="block text-sm font-medium text-primary">X Position</label>
                         <input 
                             type="number" 
                             x-model.number="cropX" 
                             @input="updateCropOverlay()"
-                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                            class="input-field mt-1">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Y Position</label>
+                        <label class="block text-sm font-medium text-primary">Y Position</label>
                         <input 
                             type="number" 
                             x-model.number="cropY"
                             @input="updateCropOverlay()"
-                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                            class="input-field mt-1">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Width</label>
+                        <label class="block text-sm font-medium text-primary">Width</label>
                         <input 
                             type="number" 
                             x-model.number="cropWidth"
                             @input="updateCropOverlay()"
-                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                            class="input-field mt-1">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Height</label>
+                        <label class="block text-sm font-medium text-primary">Height</label>
                         <input 
                             type="number" 
                             x-model.number="cropHeight"
                             @input="updateCropOverlay()"
-                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                            class="input-field mt-1">
                     </div>
                 </div>
                 
                 <!-- Preview Image with Crop Overlay -->
-                <div class="overflow-auto max-h-[600px] border border-gray-200 rounded bg-gray-100 p-4">
+                <div class="overflow-auto max-h-600 border border-custom rounded bg-subtle p-4">
                     <div class="crop-container inline-block" @mousedown="startDrag($event)">
                         <img 
                             :src="previewImage" 
@@ -157,19 +349,19 @@
                     </div>
                 </div>
                 
-                <div class="mt-4 text-sm text-gray-600">
+                <div class="mt-4 text-sm text-tertiary">
                     <i class="bi bi-info-circle"></i>
                     Drag the blue box to position it, or drag the handles to resize. The crop area will be applied to all images.
                 </div>
             </div>
             
             <!-- Action Buttons -->
-            <div x-show="files.length > 0" class="bg-white rounded-lg shadow-md p-6">
+            <div x-show="files.length > 0" class="bg-card shadow-custom rounded-lg p-6">
                 <div class="flex gap-4">
                     <button 
                         @click="cropAllImages()"
                         :disabled="processing"
-                        class="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                        class="btn-primary">
                         <span x-show="!processing">
                             <i class="bi bi-crop"></i>
                             Crop All Images
@@ -182,31 +374,31 @@
                     
                     <button 
                         @click="reset()"
-                        class="px-6 py-3 bg-gray-500 text-white font-semibold rounded-lg hover:bg-gray-600">
+                        class="btn-secondary">
                         <i class="bi bi-arrow-clockwise"></i>
                         Reset
                     </button>
                 </div>
                 
                 <div x-show="progress.total > 0" class="mt-4">
-                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                    <div class="flex justify-between text-sm text-secondary mb-1">
                         <span>Processing: <span x-text="progress.current"></span> / <span x-text="progress.total"></span></span>
                         <span><span x-text="Math.round((progress.current / progress.total) * 100)"></span>%</span>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="progress-bg">
                         <div 
-                            class="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                            class="progress-fill"
                             :style="`width: ${(progress.current / progress.total) * 100}%`">
                         </div>
                     </div>
                 </div>
                 
-                <div x-show="completedFiles.length > 0" class="mt-4 p-4 bg-green-50 rounded">
-                    <p class="text-green-700 font-semibold mb-2">
+                <div x-show="completedFiles.length > 0" class="mt-4 p-4 rounded" style="background-color: rgba(34, 197, 94, 0.1);">
+                    <p class="font-semibold mb-2" style="color: #15803d;">
                         <i class="bi bi-check-circle"></i>
                         Cropping Complete!
                     </p>
-                    <p class="text-sm text-green-600">
+                    <p class="text-sm" style="color: #16a34a;">
                         Successfully cropped <span x-text="completedFiles.length"></span> image(s).
                         Files have been downloaded with "-crop" suffix.
                     </p>
@@ -239,6 +431,28 @@
                 resizeHandle: null,
                 dragStart: { x: 0, y: 0 },
                 cropStart: { x: 0, y: 0, width: 0, height: 0 },
+                darkMode: false,
+                
+                init() {
+                    // Load dark mode preference from localStorage
+                    const savedDarkMode = localStorage.getItem('pineCropDarkMode');
+                    this.darkMode = savedDarkMode === 'true';
+                    this.updateDarkMode();
+                },
+                
+                toggleDarkMode() {
+                    this.darkMode = !this.darkMode;
+                    this.updateDarkMode();
+                    localStorage.setItem('pineCropDarkMode', this.darkMode.toString());
+                },
+                
+                updateDarkMode() {
+                    if (this.darkMode) {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                },
                 
                 async handleFileUpload(event) {
                     this.files = Array.from(event.target.files);
