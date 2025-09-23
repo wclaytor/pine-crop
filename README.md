@@ -155,7 +155,11 @@ Customize colors, sizes, and styles using Tailwind CSS classes or add custom CSS
 
 ## 🤝 Contributing
 
-Feel free to fork this project and submit improvements. Some areas for potential enhancement:
+This project is primarily a testing ground for using GitHub Copilot to implement a proof-of-concept based on a template and incrementally improve it.
+
+Feel free to fork this project and submit improvements. However, please don't submit pull requests for issues that have already been assigned. Since someone is already working on that you will be wasting your time and the PR will be ignored.
+
+Some areas for potential enhancement:
 
 - Support for additional image formats (JPEG, WebP, etc.)
 - Preset crop dimensions
