@@ -10,47 +10,68 @@
     
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        if (typeof tailwind !== 'undefined') {
+            tailwind.config = {
+                darkMode: 'class'
+            }
+        }
+    </script>
     
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     
     <style>
         [x-cloak] { display: none !important; }
+        
+        /* Dark mode transitions */
+        * {
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
     </style>
 </head>
 <body>
-    <div x-data="starterApp()" x-cloak class="min-h-screen bg-gray-50 p-6">
+    <div x-data="starterApp()" x-cloak :class="darkMode ? 'dark' : ''" class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 transition-colors duration-300">
         <div class="max-w-6xl mx-auto">
             <!-- Header -->
-            <header class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <header class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 transition-colors duration-300">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">
                             <i class="bi bi-lightning-charge text-blue-500"></i>
                             Alpine.js Starter Demo
                         </h1>
-                        <p class="text-gray-600">A comprehensive demonstration of Alpine.js core concepts</p>
+                        <p class="text-gray-600 dark:text-gray-300">A comprehensive demonstration of Alpine.js core concepts</p>
                     </div>
-                    <div class="text-right">
-                        <div class="text-sm text-gray-500">Active Tasks</div>
-                        <div class="text-2xl font-bold text-blue-600" x-text="activeTasks"></div>
+                    <div class="flex items-center gap-4">
+                        <div class="text-right">
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Active Tasks</div>
+                            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" x-text="activeTasks"></div>
+                        </div>
+                        <button 
+                            @click="toggleDarkMode()"
+                            class="p-3 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 transition-all duration-200 border border-gray-300 dark:border-gray-600"
+                            title="Toggle dark mode">
+                            <i x-show="!darkMode" class="bi bi-moon text-xl"></i>
+                            <i x-show="darkMode" class="bi bi-sun text-xl"></i>
+                        </button>
                     </div>
                 </div>
                 
                 <!-- Quick Actions -->
                 <div class="mt-4 flex gap-2 flex-wrap">
                     <button @click="showModal = true" 
-                            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2">
+                            class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg flex items-center gap-2 transition-colors duration-300">
                         <i class="bi bi-info-circle"></i>
                         About This Demo
                     </button>
                     <button @click="clearAllData" 
-                            class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center gap-2">
+                            class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center gap-2 transition-colors duration-300">
                         <i class="bi bi-trash"></i>
                         Clear All Data
                     </button>
                     <button @click="exportData" 
-                            class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 flex items-center gap-2">
+                            class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 flex items-center gap-2 transition-colors duration-300">
                         <i class="bi bi-download"></i>
                         Export Data
                     </button>
@@ -61,43 +82,43 @@
                 <!-- Left Column -->
                 <div class="space-y-6">
                     <!-- 1. Basic Reactivity & Forms -->
-                    <section class="bg-white rounded-lg shadow-md p-6">
-                        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors duration-300">
+                        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
                             <i class="bi bi-1-circle text-blue-500"></i>
                             Basic Reactivity & Forms
                         </h2>
                         
                         <!-- Simple Input Example -->
                         <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Your Name (x-model)
                             </label>
                             <input x-model="userName" 
                                    type="text" 
                                    placeholder="Enter your name..."
-                                   class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <p class="mt-2 text-sm text-gray-600">
-                                Hello, <span x-text="userName || 'Anonymous'" class="font-semibold"></span>! 👋
+                                   class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+                            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                Hello, <span x-text="userName || 'Anonymous'" class="font-semibold text-gray-800 dark:text-gray-200"></span>! 👋
                             </p>
                         </div>
 
                         <!-- Form with Validation -->
                         <form @submit.prevent="addTask" class="space-y-3">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Add New Task
                                 </label>
                                 <input x-model="newTask.title" 
                                        type="text" 
                                        placeholder="Task title..."
-                                       class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
                                        :class="{'border-red-500': errors.title}">
                                 <div x-show="errors.title" class="text-red-500 text-sm mt-1" x-text="errors.title"></div>
                             </div>
                             
                             <div>
                                 <select x-model="newTask.priority" 
-                                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300">
                                     <option value="">Select Priority</option>
                                     <option value="high">High Priority</option>
                                     <option value="medium">Medium Priority</option>
@@ -106,7 +127,7 @@
                             </div>
 
                             <button type="submit" 
-                                    class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center justify-center gap-2">
+                                    class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center justify-center gap-2 transition-colors duration-300">
                                 <i class="bi bi-plus-circle"></i>
                                 Add Task
                             </button>
@@ -114,8 +135,8 @@
                     </section>
 
                     <!-- 2. Conditional Display -->
-                    <section class="bg-white rounded-lg shadow-md p-6">
-                        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors duration-300">
+                        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
                             <i class="bi bi-2-circle text-green-500"></i>
                             Conditional Display (x-show, x-if)
                         </h2>
@@ -124,55 +145,55 @@
                             <div class="flex items-center gap-4">
                                 <label class="flex items-center gap-2 cursor-pointer">
                                     <input type="checkbox" x-model="showAdvanced" class="w-4 h-4 text-blue-500">
-                                    <span>Show Advanced Options</span>
+                                    <span class="text-gray-800 dark:text-gray-200">Show Advanced Options</span>
                                 </label>
                             </div>
 
                             <!-- x-show example (element stays in DOM) -->
                             <div x-show="showAdvanced" 
                                  x-transition 
-                                 class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                                <h4 class="font-semibold text-blue-800 mb-2">Advanced Settings (x-show)</h4>
-                                <p class="text-sm text-blue-700">This content is shown/hidden with x-show and stays in the DOM.</p>
+                                 class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg transition-colors duration-300">
+                                <h4 class="font-semibold text-blue-800 dark:text-blue-300 mb-2">Advanced Settings (x-show)</h4>
+                                <p class="text-sm text-blue-700 dark:text-blue-400">This content is shown/hidden with x-show and stays in the DOM.</p>
                                 <button @click="copyToClipboard('Advanced settings accessed!')" 
-                                        class="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
+                                        class="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition-colors duration-300">
                                     Copy Status
                                 </button>
                             </div>
 
                             <!-- x-if example (element removed from DOM) -->
                             <template x-if="tasks.length > 0">
-                                <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
-                                    <h4 class="font-semibold text-green-800 mb-2">Tasks Available (x-if)</h4>
-                                    <p class="text-sm text-green-700">
+                                <div class="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg transition-colors duration-300">
+                                    <h4 class="font-semibold text-green-800 dark:text-green-300 mb-2">Tasks Available (x-if)</h4>
+                                    <p class="text-sm text-green-700 dark:text-green-400">
                                         This appears only when tasks exist and is completely removed from DOM when hidden.
                                     </p>
                                 </div>
                             </template>
 
                             <template x-if="tasks.length === 0">
-                                <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                    <h4 class="font-semibold text-yellow-800 mb-2">No Tasks Yet</h4>
-                                    <p class="text-sm text-yellow-700">Add your first task above to see the x-if directive in action!</p>
+                                <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg transition-colors duration-300">
+                                    <h4 class="font-semibold text-yellow-800 dark:text-yellow-300 mb-2">No Tasks Yet</h4>
+                                    <p class="text-sm text-yellow-700 dark:text-yellow-400">Add your first task above to see the x-if directive in action!</p>
                                 </div>
                             </template>
                         </div>
                     </section>
 
                     <!-- 3. File Upload -->
-                    <section class="bg-white rounded-lg shadow-md p-6">
-                        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors duration-300">
+                        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
                             <i class="bi bi-3-circle text-purple-500"></i>
                             File Upload & Processing
                         </h2>
                         
-                        <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                        <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300">
                             <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                <i class="bi bi-cloud-upload text-4xl text-gray-400 mb-3"></i>
-                                <p class="mb-2 text-sm text-gray-700">
+                                <i class="bi bi-cloud-upload text-4xl text-gray-400 dark:text-gray-500 mb-3"></i>
+                                <p class="mb-2 text-sm text-gray-700 dark:text-gray-300">
                                     <span class="font-semibold">Click to upload</span> or drag and drop
                                 </p>
-                                <p class="text-xs text-gray-500">JSON files (task lists)</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">JSON files (task lists)</p>
                             </div>
                             <input type="file" 
                                    class="hidden" 
@@ -181,8 +202,8 @@
                         </label>
 
                         <div x-show="uploadStatus" 
-                             class="mt-4 p-3 rounded-lg"
-                             :class="uploadStatus.includes('Error') ? 'bg-red-50 border border-red-200 text-red-700' : 'bg-green-50 border border-green-200 text-green-700'">
+                             class="mt-4 p-3 rounded-lg transition-colors duration-300"
+                             :class="uploadStatus.includes('Error') ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400' : 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400'">
                             <p class="text-sm" x-text="uploadStatus"></p>
                         </div>
                     </section>
@@ -191,8 +212,8 @@
                 <!-- Right Column -->
                 <div class="space-y-6">
                     <!-- 4. Lists & Loops with Computed Properties -->
-                    <section class="bg-white rounded-lg shadow-md p-6">
-                        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors duration-300">
+                        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
                             <i class="bi bi-4-circle text-orange-500"></i>
                             Lists & Loops (x-for) + Computed Properties
                         </h2>
@@ -201,18 +222,18 @@
                         <div class="mb-4">
                             <div class="flex gap-2 mb-3">
                                 <button @click="filter = 'all'"
-                                        :class="filter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'"
-                                        class="px-3 py-1 rounded-lg text-sm">
+                                        :class="filter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'"
+                                        class="px-3 py-1 rounded-lg text-sm transition-colors duration-300">
                                     All (<span x-text="tasks.length"></span>)
                                 </button>
                                 <button @click="filter = 'pending'"
-                                        :class="filter === 'pending' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'"
-                                        class="px-3 py-1 rounded-lg text-sm">
+                                        :class="filter === 'pending' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'"
+                                        class="px-3 py-1 rounded-lg text-sm transition-colors duration-300">
                                     Pending (<span x-text="activeTasks"></span>)
                                 </button>
                                 <button @click="filter = 'completed'"
-                                        :class="filter === 'completed' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'"
-                                        class="px-3 py-1 rounded-lg text-sm">
+                                        :class="filter === 'completed' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'"
+                                        class="px-3 py-1 rounded-lg text-sm transition-colors duration-300">
                                     Done (<span x-text="completedTasks"></span>)
                                 </button>
                             </div>
@@ -220,44 +241,44 @@
                             <input x-model="searchTerm" 
                                    type="text" 
                                    placeholder="Search tasks..."
-                                   class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300">
                         </div>
 
                         <!-- Task List (x-for loop) -->
                         <div class="space-y-2 max-h-64 overflow-y-auto">
                             <template x-for="task in filteredTasks" :key="task.id">
-                                <div class="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50"
-                                     :class="task.completed ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'">
+                                <div class="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-300"
+                                     :class="task.completed ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600'">
                                     <input type="checkbox" 
                                            x-model="task.completed" 
                                            @change="saveToStorage()"
                                            class="w-4 h-4 text-blue-500">
                                     
                                     <div class="flex-1">
-                                        <span :class="{'line-through text-gray-400': task.completed}" 
+                                        <span :class="{'line-through text-gray-400 dark:text-gray-500': task.completed}" 
                                               x-text="task.title"
-                                              class="block font-medium"></span>
-                                        <span class="text-xs text-gray-500" 
+                                              class="block font-medium text-gray-800 dark:text-gray-200"></span>
+                                        <span class="text-xs text-gray-500 dark:text-gray-400" 
                                               x-text="task.priority + ' priority'"></span>
                                     </div>
 
                                     <span class="text-xs px-2 py-1 rounded-full"
                                           :class="{
-                                              'bg-red-100 text-red-700': task.priority === 'high',
-                                              'bg-yellow-100 text-yellow-700': task.priority === 'medium',
-                                              'bg-green-100 text-green-700': task.priority === 'low'
+                                              'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400': task.priority === 'high',
+                                              'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400': task.priority === 'medium',
+                                              'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400': task.priority === 'low'
                                           }"
                                           x-text="task.priority"></span>
 
                                     <button @click="removeTask(task.id)" 
-                                            class="text-red-500 hover:text-red-700 p-1">
+                                            class="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 p-1 transition-colors duration-300">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
                             </template>
 
                             <div x-show="filteredTasks.length === 0" 
-                                 class="text-center py-8 text-gray-400">
+                                 class="text-center py-8 text-gray-400 dark:text-gray-500">
                                 <i class="bi bi-inbox text-3xl mb-2"></i>
                                 <p>No tasks match your current filter</p>
                             </div>
@@ -265,58 +286,58 @@
                     </section>
 
                     <!-- 5. Statistics (Computed Properties) -->
-                    <section class="bg-white rounded-lg shadow-md p-6">
-                        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors duration-300">
+                        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
                             <i class="bi bi-5-circle text-teal-500"></i>
                             Statistics (Computed Properties)
                         </h2>
                         
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="text-center p-4 bg-blue-50 rounded-lg">
-                                <div class="text-2xl font-bold text-blue-600" x-text="taskStats.total"></div>
-                                <div class="text-sm text-blue-700">Total Tasks</div>
+                            <div class="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg transition-colors duration-300">
+                                <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" x-text="taskStats.total"></div>
+                                <div class="text-sm text-blue-700 dark:text-blue-300">Total Tasks</div>
                             </div>
-                            <div class="text-center p-4 bg-green-50 rounded-lg">
-                                <div class="text-2xl font-bold text-green-600" x-text="taskStats.completed"></div>
-                                <div class="text-sm text-green-700">Completed</div>
+                            <div class="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg transition-colors duration-300">
+                                <div class="text-2xl font-bold text-green-600 dark:text-green-400" x-text="taskStats.completed"></div>
+                                <div class="text-sm text-green-700 dark:text-green-300">Completed</div>
                             </div>
-                            <div class="text-center p-4 bg-yellow-50 rounded-lg">
-                                <div class="text-2xl font-bold text-yellow-600" x-text="taskStats.pending"></div>
-                                <div class="text-sm text-yellow-700">Pending</div>
+                            <div class="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg transition-colors duration-300">
+                                <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400" x-text="taskStats.pending"></div>
+                                <div class="text-sm text-yellow-700 dark:text-yellow-300">Pending</div>
                             </div>
-                            <div class="text-center p-4 bg-purple-50 rounded-lg">
-                                <div class="text-2xl font-bold text-purple-600" x-text="completionPercentage + '%'"></div>
-                                <div class="text-sm text-purple-700">Complete</div>
+                            <div class="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg transition-colors duration-300">
+                                <div class="text-2xl font-bold text-purple-600 dark:text-purple-400" x-text="completionPercentage + '%'"></div>
+                                <div class="text-sm text-purple-700 dark:text-purple-300">Complete</div>
                             </div>
                         </div>
                     </section>
 
                     <!-- 6. Local Storage Demo -->
-                    <section class="bg-white rounded-lg shadow-md p-6">
-                        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <section class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors duration-300">
+                        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
                             <i class="bi bi-6-circle text-indigo-500"></i>
                             Local Storage Persistence
                         </h2>
                         
                         <div class="space-y-3">
-                            <p class="text-sm text-gray-600">
-                                Your tasks are automatically saved to browser storage and will persist between sessions.
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Your tasks and theme preference are automatically saved to browser storage and will persist between sessions.
                             </p>
                             
                             <div class="flex gap-2">
                                 <button @click="saveToStorage()" 
-                                        class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 flex items-center gap-2">
+                                        class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 flex items-center gap-2 transition-colors duration-300">
                                     <i class="bi bi-save"></i>
                                     Save Now
                                 </button>
                                 <button @click="loadFromStorage()" 
-                                        class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2">
+                                        class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2 transition-colors duration-300">
                                     <i class="bi bi-arrow-clockwise"></i>
                                     Reload
                                 </button>
                             </div>
 
-                            <div x-show="lastSaved" class="text-xs text-gray-500">
+                            <div x-show="lastSaved" class="text-xs text-gray-500 dark:text-gray-400">
                                 Last saved: <span x-text="lastSaved"></span>
                             </div>
                         </div>
@@ -330,79 +351,87 @@
              @click="showModal = false"
              class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-8 z-50">
             <div @click.stop 
-                 class="bg-white rounded-lg shadow-xl w-full max-w-4xl" 
+                 class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl transition-colors duration-300" 
                  style="height: 80vh">
                 
                 <!-- Fixed Header -->
-                <div class="bg-white p-6 border-b rounded-t-lg">
+                <div class="bg-white dark:bg-gray-800 p-6 border-b border-gray-200 dark:border-gray-700 rounded-t-lg transition-colors duration-300">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-xl font-bold text-gray-800">About This Alpine.js Demo</h3>
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100">About This Alpine.js Demo</h3>
                         <button @click="showModal = false" 
-                                class="text-gray-400 hover:text-gray-600">
+                                class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-300">
                             <i class="bi bi-x text-2xl"></i>
                         </button>
                     </div>
                 </div>
                 
                 <!-- Scrollable Content -->
-                <div class="bg-gray-50 p-6 overflow-y-scroll" 
+                <div class="bg-gray-50 dark:bg-gray-900 p-6 overflow-y-scroll transition-colors duration-300" 
                      style="height: calc(80vh - 120px)">
                     
                     <div class="prose max-w-none">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-4">Alpine.js Core Concepts Demonstrated</h4>
+                        <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Alpine.js Core Concepts Demonstrated</h4>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-white p-4 rounded-lg border">
-                                <h5 class="font-semibold text-blue-600 mb-2">1. Reactive Data Binding</h5>
-                                <p class="text-sm text-gray-600">
-                                    Using <code class="bg-gray-100 px-1 rounded">x-model</code> for two-way binding and 
-                                    <code class="bg-gray-100 px-1 rounded">x-text</code> for displaying data.
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+                                <h5 class="font-semibold text-blue-600 dark:text-blue-400 mb-2">1. Reactive Data Binding</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                    Using <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-gray-800 dark:text-gray-200">x-model</code> for two-way binding and 
+                                    <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-gray-800 dark:text-gray-200">x-text</code> for displaying data.
                                 </p>
                             </div>
                             
-                            <div class="bg-white p-4 rounded-lg border">
-                                <h5 class="font-semibold text-green-600 mb-2">2. Event Handling</h5>
-                                <p class="text-sm text-gray-600">
-                                    Using <code class="bg-gray-100 px-1 rounded">@click</code>, 
-                                    <code class="bg-gray-100 px-1 rounded">@submit.prevent</code>, and 
-                                    <code class="bg-gray-100 px-1 rounded">@change</code> for user interactions.
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+                                <h5 class="font-semibold text-green-600 dark:text-green-400 mb-2">2. Event Handling</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                    Using <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-gray-800 dark:text-gray-200">@click</code>, 
+                                    <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-gray-800 dark:text-gray-200">@submit.prevent</code>, and 
+                                    <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-gray-800 dark:text-gray-200">@change</code> for user interactions.
                                 </p>
                             </div>
                             
-                            <div class="bg-white p-4 rounded-lg border">
-                                <h5 class="font-semibold text-purple-600 mb-2">3. Conditional Display</h5>
-                                <p class="text-sm text-gray-600">
-                                    Using <code class="bg-gray-100 px-1 rounded">x-show</code> and 
-                                    <code class="bg-gray-100 px-1 rounded">x-if</code> for showing/hiding content.
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+                                <h5 class="font-semibold text-purple-600 dark:text-purple-400 mb-2">3. Conditional Display</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                    Using <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-gray-800 dark:text-gray-200">x-show</code> and 
+                                    <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-gray-800 dark:text-gray-200">x-if</code> for showing/hiding content.
                                 </p>
                             </div>
                             
-                            <div class="bg-white p-4 rounded-lg border">
-                                <h5 class="font-semibold text-orange-600 mb-2">4. Lists & Loops</h5>
-                                <p class="text-sm text-gray-600">
-                                    Using <code class="bg-gray-100 px-1 rounded">x-for</code> to render dynamic lists 
-                                    with proper <code class="bg-gray-100 px-1 rounded">:key</code> attributes.
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+                                <h5 class="font-semibold text-orange-600 dark:text-orange-400 mb-2">4. Lists & Loops</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                    Using <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-gray-800 dark:text-gray-200">x-for</code> to render dynamic lists 
+                                    with proper <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-gray-800 dark:text-gray-200">:key</code> attributes.
                                 </p>
                             </div>
                             
-                            <div class="bg-white p-4 rounded-lg border">
-                                <h5 class="font-semibold text-teal-600 mb-2">5. Computed Properties</h5>
-                                <p class="text-sm text-gray-600">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+                                <h5 class="font-semibold text-teal-600 dark:text-teal-400 mb-2">5. Computed Properties</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
                                     Using getter functions for derived data that automatically updates when dependencies change.
                                 </p>
                             </div>
                             
-                            <div class="bg-white p-4 rounded-lg border">
-                                <h5 class="font-semibold text-indigo-600 mb-2">6. Local Storage</h5>
-                                <p class="text-sm text-gray-600">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+                                <h5 class="font-semibold text-indigo-600 dark:text-indigo-400 mb-2">6. Local Storage</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
                                     Persistent data using browser localStorage with automatic save/load functionality.
+                                </p>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+                                <h5 class="font-semibold text-gray-600 dark:text-gray-400 mb-2">7. Dark Mode Toggle</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                    Accessibility-focused dark mode with system preference detection and localStorage persistence.
                                 </p>
                             </div>
                         </div>
 
-                        <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                            <h5 class="font-semibold text-blue-800 mb-2">🚀 Getting Started</h5>
-                            <ol class="text-sm text-blue-700 space-y-1 list-decimal list-inside">
+                        <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg transition-colors duration-300">
+                            <h5 class="font-semibold text-blue-800 dark:text-blue-300 mb-2">🚀 Getting Started</h5>
+                            <ol class="text-sm text-blue-700 dark:text-blue-400 space-y-1 list-decimal list-inside">
+                                <li>Try toggling dark mode with the button in the header</li>
                                 <li>Add some tasks using the form in section 1</li>
                                 <li>Try the search and filter functionality</li>
                                 <li>Toggle the "Show Advanced Options" checkbox</li>
@@ -412,14 +441,15 @@
                             </ol>
                         </div>
 
-                        <div class="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                            <h5 class="font-semibold text-green-800 mb-2">📁 Single File Benefits</h5>
-                            <ul class="text-sm text-green-700 space-y-1 list-disc list-inside">
+                        <div class="mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg transition-colors duration-300">
+                            <h5 class="font-semibold text-green-800 dark:text-green-300 mb-2">📁 Single File Benefits</h5>
+                            <ul class="text-sm text-green-700 dark:text-green-400 space-y-1 list-disc list-inside">
                                 <li>No build process - just save and open</li>
                                 <li>Easy to share via email or file transfer</li>
                                 <li>Works offline after initial load</li>
                                 <li>Perfect for internal tools and utilities</li>
                                 <li>Version control friendly</li>
+                                <li>Built-in accessibility features like dark mode</li>
                             </ul>
                         </div>
                     </div>
@@ -442,6 +472,7 @@
                 showModal: false,
                 uploadStatus: '',
                 lastSaved: null,
+                darkMode: false,
 
                 // === COMPUTED PROPERTIES ===
                 get filteredTasks() {
@@ -490,9 +521,28 @@
                     // Load saved data on startup
                     this.loadFromStorage();
                     
+                    // Load dark mode preference from localStorage
+                    const savedDarkMode = localStorage.getItem('alpine-starter-darkMode');
+                    this.darkMode = savedDarkMode === 'true';
+                    this.updateDarkMode();
+                    
                     // Add some sample data if none exists
                     if (this.tasks.length === 0) {
                         this.addSampleData();
+                    }
+                },
+
+                toggleDarkMode() {
+                    this.darkMode = !this.darkMode;
+                    this.updateDarkMode();
+                    localStorage.setItem('alpine-starter-darkMode', this.darkMode.toString());
+                },
+
+                updateDarkMode() {
+                    if (this.darkMode) {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
                     }
                 },
 
@@ -615,23 +665,29 @@
                 saveToStorage() {
                     localStorage.setItem('alpine-starter-tasks', JSON.stringify(this.tasks));
                     localStorage.setItem('alpine-starter-user', this.userName);
+                    localStorage.setItem('alpine-starter-darkMode', this.darkMode.toString());
                     this.lastSaved = new Date().toLocaleTimeString();
                 },
 
                 loadFromStorage() {
                     const savedTasks = localStorage.getItem('alpine-starter-tasks');
                     const savedUser = localStorage.getItem('alpine-starter-user');
+                    const savedDarkMode = localStorage.getItem('alpine-starter-darkMode');
                     
                     if (savedTasks) {
                         try {
                             this.tasks = JSON.parse(savedTasks);
                         } catch (error) {
-                            console.error('Error loading tasks from storage:', error);
+                            console.error('Error parsing saved tasks:', error);
                         }
                     }
                     
                     if (savedUser) {
                         this.userName = savedUser;
+                    }
+                    
+                    if (savedDarkMode) {
+                        this.darkMode = savedDarkMode === 'true';
                     }
                 },
 
@@ -645,6 +701,7 @@
                         this.showAdvanced = false;
                         localStorage.removeItem('alpine-starter-tasks');
                         localStorage.removeItem('alpine-starter-user');
+                        // Keep dark mode preference when clearing data
                         this.lastSaved = null;
                     }
                 }
